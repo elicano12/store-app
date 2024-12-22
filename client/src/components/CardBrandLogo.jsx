@@ -1,4 +1,7 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
+import PropTypes from "prop-types";
+
 import visaLogo from '../assets/logos/visa.png';
 import mastercardLogo from '../assets/logos/mastercard.png';
 // import amexLogo from '../assets/logos/amex.png';
@@ -38,7 +41,11 @@ const CardBrandLogo = ({ cardNumber }) => {
 
   const logo = brandLogos[brand] || brandLogos.Unknown;
 
-  return <img src={logo} alt={brand} className="w-12 h-8" />;
+  return <img src={logo} alt={brand} className="w-8 h-6" />;
+};
+
+CardBrandLogo.propTypes = {
+  cardNumber: PropTypes.func.isRequired,
 };
 
 export default CardBrandLogo;

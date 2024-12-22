@@ -1,10 +1,11 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import ProductList from './pages/ProductList';
-import ProductDetail from './pages/ProductDetail';
-import Cart from './pages/Cart';
-import Checkout from './pages/Checkout';
-import Payment from './pages/Payment';
+/* eslint-disable no-unused-vars */
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import ProductList from "./pages/ProductList";
+import ProductDetail from "./pages/ProductDetail";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Payment from "./pages/Payment";
 // import Confirmation from './pages/Confirmation';
 
 const App = () => {

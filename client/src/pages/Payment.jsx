@@ -1,8 +1,9 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { clearCart } from '../redux/slices/cartSlice';
-import PaymentForm from '../components/PaymentForm';
+/* eslint-disable no-unused-vars */
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { clearCart } from "../redux/slices/cartSlice";
+import PaymentForm from "../components/PaymentForm";
 
 const Payment = () => {
   const { totalAmount } = useSelector((state) => state.cart);
@@ -13,7 +14,7 @@ const Payment = () => {
     // Aquí integras con la API de Wompi
     // Suponiendo que el pago es exitoso
     dispatch(clearCart());
-    navigate('/confirmation');
+    navigate("/confirmation");
   };
 
   return (

@@ -1,8 +1,13 @@
-import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchProductById } from '../redux/slices/productSlice';
-import { addItemToCart } from '../redux/slices/cartSlice';
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Dialog } from "@headlessui/react"
+
+import Checkout from "../pages/Checkout";
+import Payment from "../pages/Payment";
+import { fetchProductById } from "../redux/slices/productSlice";
+import { addItemToCart } from "../redux/slices/cartSlice";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -14,13 +19,26 @@ const ProductDetail = () => {
     error,
   } = useSelector((state) => state.products);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [step, setStep] = useState(1); // 1 for Checkout, 2 for Payment
+
   useEffect(() => {
     dispatch(fetchProductById(id));
   }, [dispatch, id]);
 
   const handleBuyNow = () => {
     dispatch(addItemToCart(product));
-    navigate('/cart');
+    setIsModalOpen(true);
+    // navigate("/cart");
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setStep(1); // Reset to the first step
+  };
+
+  const proceedToPayment = () => {
+    setStep(2);
   };
 
   if (loading) return <div>Loading product...</div>;
@@ -33,7 +51,7 @@ const ProductDetail = () => {
         {/* Imagen del producto */}
         <div className="flex-1">
           <img
-            src={product.imageUrl || 'https://via.placeholder.com/300'}
+            src={product.imageUrl || "https://via.placeholder.com/300"}
             alt={product.name}
             className="w-full h-auto rounded-lg"
           />
@@ -53,8 +71,35 @@ const ProductDetail = () => {
           </button>
         </div>
       </div>
+
+      {/* Modal */}
+      <Dialog
+        open={isModalOpen}
+        onClose={closeModal}
+        className="fixed z-10 inset-0 overflow-y-auto"
+      >
+        <div className="flex items-center justify-center min-h-screen px-4">
+          <div className="fixed inset-0 bg-black bg-opacity-30" />
+          <div className="relative bg-white rounded-lg max-w-md mx-auto p-6 shadow-lg">
+          <Dialog.Panel className="bg-white rounded-lg p-6 shadow-lg max-w-md mx-auto">
+          <Dialog.Title className="text-lg font-bold mb-4">
+              {step === 1 ? "Checkout" : "Payment"}
+            </Dialog.Title>
+            {step === 1 && <Checkout onProceed={proceedToPayment} />}
+            {step === 2 && <Payment />}
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            >
+              ✖
+            </button>
+            </Dialog.Panel>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
+
 };
 
 export default ProductDetail;

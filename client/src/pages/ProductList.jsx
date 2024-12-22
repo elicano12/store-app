@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchProducts } from '../redux/slices/productSlice';
-import { Link } from 'react-router-dom';
+/* eslint-disable no-unused-vars */
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+
+import { fetchProducts } from "../redux/slices/productSlice";
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -28,7 +30,7 @@ const ProductList = () => {
           >
             <div className="relative">
               <img
-                src={product.imageUrl || 'https://via.placeholder.com/300'}
+                src={product.imageUrl || "https://via.placeholder.com/300"}
                 alt={product.name}
                 className="w-full h-64 object-cover"
               />
