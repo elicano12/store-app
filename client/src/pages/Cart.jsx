@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 import {
   removeItemFromCart,
   updateItemQuantity,
 } from "../redux/slices/cartSlice";
-import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const { items, totalAmount } = useSelector((state) => state.cart);

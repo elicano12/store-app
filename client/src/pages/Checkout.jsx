@@ -1,15 +1,15 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-const Checkout = ({onProceed}) => {
+const Checkout = ({ onProceed }) => {
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
     email: "",
     address: "",
   });
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleChange = (e) => {
     setCustomerInfo({ ...customerInfo, [e.target.name]: e.target.value });

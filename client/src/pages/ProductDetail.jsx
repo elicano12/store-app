@@ -2,10 +2,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Dialog } from "@headlessui/react"
+import { Dialog } from "@headlessui/react";
 
 import Checkout from "../pages/Checkout";
 import Payment from "../pages/Payment";
+import Confirmation from "../pages/Confirmation";
 import { fetchProductById } from "../redux/slices/productSlice";
 import { addItemToCart } from "../redux/slices/cartSlice";
 
@@ -20,7 +21,7 @@ const ProductDetail = () => {
   } = useSelector((state) => state.products);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [step, setStep] = useState(1); // 1 for Checkout, 2 for Payment
+  const [step, setStep] = useState(1); // 1 for Checkout, 2 for Payment, 3 for confirmation
 
   useEffect(() => {
     dispatch(fetchProductById(id));
@@ -37,8 +38,12 @@ const ProductDetail = () => {
     setStep(1); // Reset to the first step
   };
 
-  const proceedToPayment = () => {
+  const proceedToConfirmation = () => {
     setStep(2);
+  };
+
+  const proceedToPayment = () => {
+    setStep(3);
   };
 
   if (loading) return <div>Loading product...</div>;
@@ -81,25 +86,39 @@ const ProductDetail = () => {
         <div className="flex items-center justify-center min-h-screen px-4">
           <div className="fixed inset-0 bg-black bg-opacity-30" />
           <div className="relative bg-white rounded-lg max-w-md mx-auto p-6 shadow-lg">
-          <Dialog.Panel className="bg-white rounded-lg p-6 shadow-lg max-w-md mx-auto">
-          <Dialog.Title className="text-lg font-bold mb-4">
-              {step === 1 ? "Checkout" : "Payment"}
-            </Dialog.Title>
-            {step === 1 && <Checkout onProceed={proceedToPayment} />}
-            {step === 2 && <Payment />}
-            <button
-              onClick={closeModal}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-            >
-              ✖
-            </button>
+            <Dialog.Panel className="bg-white rounded-lg p-6 shadow-lg max-w-md mx-auto">
+              <Dialog.Title className="text-lg font-bold mb-4">
+                {step === 1
+                  ? "Checkout"
+                  : step === 2
+                  ? "Payment"
+                  : "Payment Confirmation"}
+              </Dialog.Title>
+              {step === 1 && <Checkout onProceed={proceedToConfirmation} />}
+              {step === 2 && <Payment onProceed={proceedToPayment} />}
+              {step === 3 && (
+                <Confirmation
+                  paymentSummary={{
+                    productAmount: product.price,
+                    baseFee: 50, // Tarifa base
+                    deliveryFee: 20, // Tarifa de entrega
+                  }}
+                  productId={product.id}
+                  onConfirm={closeModal}
+                />
+              )}
+              <button
+                onClick={closeModal}
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              >
+                ✖
+              </button>
             </Dialog.Panel>
           </div>
         </div>
       </Dialog>
     </div>
   );
-
 };
 
 export default ProductDetail;
