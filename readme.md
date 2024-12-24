@@ -119,7 +119,7 @@ The frontend uses Vite, and all environment variables must start with the prefix
 #### Backend Environment Variables
 The backend uses NestJS, and the environment variables are used for database configuration, authentication, and third-party service integration.
 
-* ##### # .env file for the Backend
+* ##### .env file for the Backend
     ```bash
     PORT=3000
     DATABASE_HOST=your-database-host
@@ -172,10 +172,15 @@ The backend uses NestJS, and the environment variables are used for database con
 3. Set up the Database:
     
     ```bash
+    Create a migrations data in PostgreSQL database:
+
+        npm run migrations:generate
+        npm run migrations:run
+    
     Create a PostgreSQL database named ecommerce.
     Use the seed script to load sample data:
     
-    npm run seed
+        npm run seed
     
 4. Start Development Server:
 
