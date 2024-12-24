@@ -1,23 +1,43 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import axios from "axios";
 
 import { clearCart } from "../redux/slices/cartSlice";
 import PaymentForm from "../components/PaymentForm";
+import wompiInstance from "../api/wompiApi";
 
 const Payment = ({ onProceed }) => {
   const { totalAmount } = useSelector((state) => state.cart);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handlePayment = async () => {
+  const fetchTokenizedCard = async (data) => {
+    const dataBody = {
+      number: data.cardNumber,
+      cvc: data.cvv,
+      exp_month: data.expirationDate.split('/')[0],
+      exp_year: data.expirationDate.split('/')[1],
+      card_holder: data.cardHolder,
+    };
+    try {
+    const response = await wompiInstance.post('/tokens/cards',dataBody)
+    if (response.data && response.data.data) {
+      localStorage.setItem('wompiTokenCard', JSON.stringify(response.data.data.id));
+    }
+    } catch (error) {
+      console.error("API Error:", error.response || error.message);
+    }
+  }; 
+
+  const handlePayment = async (formData) => {
     // Aquí integras con la API de Wompi
     // Suponiendo que el pago es exitoso
+    fetchTokenizedCard(formData)
     dispatch(clearCart());
     onProceed();
-    // navigate("/confirmation");
   };
 
   return (
