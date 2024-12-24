@@ -29,7 +29,6 @@ Unit testing implemented with Jest.
 * State Management: Redux
 * Styling: Tailwind CSS
 * Routing: React Router
-* Testing: Jest + React Testing Library
 
 #### Backend
 
@@ -105,8 +104,37 @@ api/
 | createdAt  |
 | updatedAt  |
 
+### Environment Variables
+To ensure the application runs properly, you need to set the required environment variables for both the Frontend and Backend. Below is a description of the variables needed for each part of the application:
+
+#### Frontend Environment Variables
+The frontend uses Vite, and all environment variables must start with the prefix VITE_. These variables are used to configure the API base URL and other external services.
+
+* ##### .env file for the Frontend
+    ```bash
+    VITE_API_BASE_URL=http://ec2-3-90-16-254.compute-1.amazonaws.com:3000/api
+    VITE_APP_WOMPI_URL=https://api-sandbox.co.uat.wompi.dev/v1
+    VITE_WOMPI_PUBLIC_KEY=your-public-key
+
+#### Backend Environment Variables
+The backend uses NestJS, and the environment variables are used for database configuration, authentication, and third-party service integration.
+
+* ##### # .env file for the Backend
+    ```bash
+    PORT=3000
+    DATABASE_HOST=your-database-host
+    DATABASE_PORT=5432
+    DATABASE_NAME=ecommerce
+    DATABASE_USER=your-database-username
+    DATABASE_PASSWORD=your-database-password
+    WOMPI_PUBLIC_KEY=your-wompi-public-key
+    WOMPI_PRIVATE_KEY=your-wompi-private-key
+    WOMPI_INTEGRITY_KEY=your-wompi-integrity-key
+    WOMPI_API_URL=https://api-sandbox.co.uat.wompi.dev/v1
+    NODE_ENV=production
 
 ### Setup Instructions
+
 #### Frontend
 
 1. Navigate to the Frontend Directory:
@@ -159,11 +187,28 @@ api/
     ```bash
     npm test
 
-#### API Documentation:
+### API Documentation:
 
 You can explore the complete API documentation, including schemas, parameters, and example responses, using Swagger.
 
 * [Local Swagger Documentation](http://localhost:3000/docs)
 * [API Swagger Documentation Deployed](http://ec2-3-90-16-254.compute-1.amazonaws.com:3000/docs)
 
+### Deployed Application
 
+The application is live and deployed on AWS. You can access it at the following link:
+
+##### Deployment Details
+
+* ##### Frontend Application: 
+    Hosted on AWS S3 with CloudFront for Content Delivery.
+    - URL: [Web Site on AWS S3](http://store-app-test.s3-website-us-east-1.amazonaws.com/.com)
+
+* ##### Backend API: 
+    Hosted on AWS ECS (Elastic Container Service) connected to AWS RDS for the database.
+    - URL: [API on AWS EC2](
+http://ec2-3-90-16-254.compute-1.amazonaws.com:3000/api/products)
+
+
+* ##### Database:
+    The application uses AWS RDS PostgreSQL for data storage.
