@@ -1,54 +1,49 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
-import axios from "axios";
 
 import { clearCart } from "../redux/slices/cartSlice";
 import PaymentForm from "../components/PaymentForm";
 import wompiInstance from "../api/wompiApi";
 
 const Payment = ({ onProceed }) => {
-  const { totalAmount } = useSelector((state) => state.cart);
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
-
   const fetchTokenizedCard = async (data) => {
+    setIsLoading(true);
     const dataBody = {
       number: data.cardNumber,
       cvc: data.cvv,
-      exp_month: data.expirationDate.split('/')[0],
-      exp_year: data.expirationDate.split('/')[1],
+      exp_month: data.expirationDate.split("/")[0],
+      exp_year: data.expirationDate.split("/")[1],
       card_holder: data.cardHolder,
     };
     try {
-    const response = await wompiInstance.post('/tokens/cards',dataBody)
-    if (response.data && response.data.data) {
-      localStorage.setItem('wompiTokenCard', JSON.stringify(response.data.data.id));
-    }
+      const response = await wompiInstance.post("/tokens/cards", dataBody);
+      if (response.data && response.data.data) {
+        localStorage.setItem("wompiTokenCard", response.data.data.id);
+      }
+      onProceed(data);
     } catch (error) {
       console.error("API Error:", error.response || error.message);
+      localStorage.setItem(
+        "wompiTokenCardError",
+        error.response || error.message
+      );
+    } finally {
+      setIsLoading(false);
     }
-  }; 
+  };
 
   const handlePayment = async (formData) => {
-    // Aquí integras con la API de Wompi
-    // Suponiendo que el pago es exitoso
-    fetchTokenizedCard(formData)
+    fetchTokenizedCard(formData);
     dispatch(clearCart());
-    onProceed();
   };
 
   return (
     <div className="container mx-auto p-6">
-      {/* <button
-        onClick={handlePayment}
-        className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
-      >
-        Pay Now
-      </button> */}
-      <PaymentForm onPayment={handlePayment} />
+      <PaymentForm onPayment={handlePayment} isLoading={isLoading} />
     </div>
   );
 };

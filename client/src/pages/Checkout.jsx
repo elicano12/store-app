@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
 import wompiInstance from "../api/wompiApi";
 
 const wompiApiKey = import.meta.env.VITE_APP_WOMPI_PUBLIC_KEY;
@@ -26,18 +25,17 @@ const Checkout = ({ onProceed }) => {
 
   const fetchWompiAcceptance = async () => {
     try {
-      const response = await wompiInstance.get(`/merchants/${
-          wompiApiKey
-        }`)
-      
+      const response = await wompiInstance.get(`/merchants/${wompiApiKey}`);
+
       if (response.data && response.data.data) {
-        setTermsLink(
-          response.data.data.presigned_acceptance.permalink
-        );
+        setTermsLink(response.data.data.presigned_acceptance.permalink);
         setPersonalLink(
           response.data.data.presigned_personal_data_auth.permalink
         );
-        localStorage.setItem('wompiTokenValidation', JSON.stringify(response.data.data.presigned_acceptance.acceptance_token));
+        localStorage.setItem(
+          "wompiTokenValidation",
+          response.data.data.presigned_acceptance.acceptance_token
+        );
       }
     } catch (error) {
       console.error("API Error:", error.response || error.message);
@@ -55,7 +53,9 @@ const Checkout = ({ onProceed }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isDataAuthorized || !isTermsAccepted) {
-      alert('Please confirm that you authorize data handling and accept the terms.');
+      alert(
+        "Please confirm that you authorize data handling and accept the terms."
+      );
       return;
     }
     onProceed();
@@ -105,7 +105,7 @@ const Checkout = ({ onProceed }) => {
             onChange={(e) => setIsDataAuthorized(e.target.checked)}
           />
           <span className="text-gray-700">
-            I authorize the handling of my personal data. Read our{' '}
+            I authorize the handling of my personal data. Read our{" "}
             <a
               href={peronalLink}
               target="_blank"
@@ -129,7 +129,7 @@ const Checkout = ({ onProceed }) => {
             onChange={(e) => setIsTermsAccepted(e.target.checked)}
           />
           <span className="text-gray-700">
-            I accept the{' '}
+            I accept the{" "}
             <a
               href={termsLink}
               target="_blank"
@@ -143,13 +143,13 @@ const Checkout = ({ onProceed }) => {
         </label>
       </div>
       <button
-         type="submit"
-         disabled={!isFormComplete}
-         className={`px-6 py-2 rounded ${
-           isFormComplete
-             ? 'bg-green-500 text-white hover:bg-green-600'
-             : 'bg-gray-400 text-gray-700 cursor-not-allowed'
-         }`}
+        type="submit"
+        disabled={!isFormComplete}
+        className={`px-6 py-2 rounded ${
+          isFormComplete
+            ? "bg-green-500 text-white hover:bg-green-600"
+            : "bg-gray-400 text-gray-700 cursor-not-allowed"
+        }`}
       >
         Continue to Payment
       </button>

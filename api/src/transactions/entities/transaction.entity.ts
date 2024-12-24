@@ -5,6 +5,8 @@ import {
   ManyToOne,
   ManyToMany,
   JoinTable,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Customer } from '../../customers/entities';
 import { Product } from '../../products/entities';
@@ -17,8 +19,26 @@ export class Transaction {
   @Column()
   status: string; // Example: PENDING, COMPLETED, FAILED
 
+  @Column()
+  referenceId: string;
+
+  @Column({ type: 'text', nullable: true })
+  transactionPaymentId: string;
+
   @Column('decimal', { precision: 10, scale: 2 })
   totalAmount: number;
+
+  @CreateDateColumn({
+    type: 'timestamptz',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  created_at: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamptz',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
+  updated_at: Date;
 
   @ManyToOne(() => Customer, (customer) => customer.transactions)
   customer: Customer;

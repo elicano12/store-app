@@ -46,6 +46,18 @@ const ProductList = () => {
               <p className="text-gray-600 mt-2 text-sm">
                 {product.description}
               </p>
+
+              <div className="mt-4">
+                <span
+                  className={`text-sm font-medium ${
+                    product.stock > 0 ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {product.stock > 0
+                    ? `Stock: ${product.stock} units`
+                    : "Out of stock"}
+                </span>
+              </div>
             </div>
           </Link>
         ))}

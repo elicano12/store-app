@@ -13,7 +13,6 @@ export class ProductsController {
   findAll(): Promise<Product[]> {
     return this.productsService.findAll();
   }
-
   @Get(':productId')
   @ApiOperation({ summary: 'Get a product by ID' })
   findById(@Param('productId', ParseIntPipe) id: number): Promise<Product> {

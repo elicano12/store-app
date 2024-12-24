@@ -1,12 +1,12 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Init1734622027891 implements MigrationInterface {
-    name = 'Init1734622027891'
+export class Init1735020766634 implements MigrationInterface {
+    name = 'Init1735020766634'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "customers" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "email" character varying NOT NULL, "address" character varying NOT NULL, CONSTRAINT "PK_133ec679a801fab5e070f73d3ea" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "products" ("id" SERIAL NOT NULL, "name" character varying(255) NOT NULL, "description" text NOT NULL, "price" integer NOT NULL, "stock" integer NOT NULL, "imageUrl" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_0806c755e0aca124e67c0cf6d7d" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "transactions" ("id" SERIAL NOT NULL, "status" character varying NOT NULL, "totalAmount" numeric(10,2) NOT NULL, "customerId" integer, CONSTRAINT "PK_a219afd8dd77ed80f5a862f1db9" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "transactions" ("id" SERIAL NOT NULL, "status" character varying NOT NULL, "referenceId" character varying NOT NULL, "transactionPaymentId" text, "totalAmount" numeric(10,2) NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "customerId" integer, CONSTRAINT "PK_a219afd8dd77ed80f5a862f1db9" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "transaction_products" ("transaction_id" integer NOT NULL, "product_id" integer NOT NULL, CONSTRAINT "PK_c73b6a09595a0910ef19bcaf280" PRIMARY KEY ("transaction_id", "product_id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_b22f13085f3a484980b687df10" ON "transaction_products" ("transaction_id") `);
         await queryRunner.query(`CREATE INDEX "IDX_f95f27599ad766df9709876ef1" ON "transaction_products" ("product_id") `);

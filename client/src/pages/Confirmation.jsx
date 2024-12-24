@@ -1,45 +1,63 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createTransaction,
+  fetchTransactionStatus,
+} from "../redux/slices/transactionsSlice.js";
 
-const Confirmation = ({ paymentSummary, productId, onConfirm }) => {
-  const navigate = useNavigate();
+const Confirmation = ({
+  paymentSummary,
+  productId,
+  onConfirm,
+  installments,
+}) => {
+  const dispatch = useDispatch();
+  const { status, transaction, loading, error } = useSelector(
+    (state) => state.transaction
+  );
+  const [polling, setPolling] = useState(true);
+  const [errorConfirmation, setErrorConfirmation] = useState(null);
   const totalAmount =
     paymentSummary.productAmount +
     paymentSummary.baseFee +
     paymentSummary.deliveryFee;
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [transactionStatus, setTransactionStatus] = useState(null); // Guardar el resultado
+
+  useEffect(() => {
+    if (polling && status === "PENDING") {
+      const interval = setInterval(() => {
+        dispatch(fetchTransactionStatus(transaction?.id));
+      }, 5000);
+
+      return () => clearInterval(interval);
+    }
+    if (status && status !== "PENDING") {
+      onConfirm(status);
+      setPolling(false);
+    }
+  }, [polling, status, dispatch, transaction?.id, onConfirm]);
+
+  useEffect(() => {
+    const errorWompiConfirmation = localStorage.getItem("wompiTokenCardError");
+    setErrorConfirmation(errorWompiConfirmation);
+  }, []);
 
   const handleConfirmPayment = async () => {
-    setIsProcessing(false);
-
-    try {
-      const response = await new Promise((resolve, reject) => {
-        // Simulación de pago con Wompi
-        // Aquí se debería llamar a la API de Wompi
-        // y obtener el resultado de la transacción
-        setTimeout(() => resolve({ success: true }), 2000); // Simulando éxito en el pago
-      });
-
-      if (response.success) {
-        setTransactionStatus("success");
-        alert("Payment successful!");
-        navigate(`/product/${productId}`, { replace: true });
-      } else {
-        setTransactionStatus("failed");
-        alert("Payment failed. Please try again.");
-        setTransactionStatus("error");
-      }
-    } catch (error) {
-      setTransactionStatus("failed");
-      alert("An error occurred during the transaction.");
-    } finally {
-      setIsProcessing(false);
-      onConfirm();
-    }
+    dispatch(
+      createTransaction({
+        totalAmount: totalAmount,
+        customerId: 1,
+        productId: productId,
+        installments: parseInt(installments),
+        paymentMethod: "CARD",
+        cardToken: localStorage.getItem("wompiTokenCard"),
+        tokenValidation: localStorage.getItem("wompiTokenValidation"),
+      })
+    );
   };
+
+  if (errorConfirmation) return <div>Error: {errorConfirmation}</div>;
 
   return (
     <div>
@@ -65,13 +83,13 @@ const Confirmation = ({ paymentSummary, productId, onConfirm }) => {
       <button
         onClick={handleConfirmPayment}
         className={`w-full py-3 mt-6 rounded-lg ${
-          isProcessing
+          status === "PENDING"
             ? "bg-gray-400 cursor-not-allowed"
             : "bg-green-500 hover:bg-green-600"
         } text-white focus:outline-none focus:ring-2 focus:ring-green-300`}
-        disabled={isProcessing}
+        disabled={status}
       >
-        {isProcessing ? "Processing..." : "Confirm Payment"}
+        Confirm Payment
       </button>
     </div>
   );
@@ -85,6 +103,7 @@ Confirmation.propTypes = {
   }).isRequired,
   onConfirm: PropTypes.func.isRequired,
   productId: PropTypes.number.isRequired,
+  installments: PropTypes.number.isRequired,
 };
 
 export default Confirmation;

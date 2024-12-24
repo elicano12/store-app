@@ -1,34 +1,38 @@
-import { IsString, IsNotEmpty, Length, IsCreditCard } from 'class-validator';
+import { IsNumber, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class TokenizeCardDto {
+export class CreateTransactionDto {
   @IsNotEmpty()
-  @IsString()
-  @IsCreditCard()
-  @ApiProperty({ description: 'Card Number' })
-  readonly number: string;
+  @IsNumber()
+  @ApiProperty({ description: 'Total Amount to payment' })
+  readonly totalAmount: number;
 
   @IsNotEmpty()
   @IsString()
-  @Length(3, 4)
-  @ApiProperty({ description: 'CVC Number' })
-  readonly cvc: number;
+  @ApiProperty({ description: 'Payment Method' })
+  readonly paymentMethod: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @ApiProperty({ description: 'installments' })
+  readonly installments: number;
 
   @IsNotEmpty()
   @IsString()
-  @Length(2)
-  @ApiProperty({ description: 'Expiration Month' })
-  readonly exp_month: string;
+  @ApiProperty({ description: 'Token Card' })
+  readonly cardToken: string;
 
   @IsNotEmpty()
   @IsString()
-  @Length(2)
-  @ApiProperty({ description: 'Expiration Year' })
-  readonly exp_year: string;
+  @ApiProperty({ description: 'Token Validation' })
+  readonly tokenValidation: string;
 
   @IsNotEmpty()
-  @IsString()
-  @Length(3, 50)
-  @ApiProperty({ description: 'Card Holder' })
-  readonly card_holder: string;
+  @IsNumber()
+  @ApiProperty({ description: 'Customer ID' })
+  readonly customerId: number;
+
+  @IsNotEmpty()
+  @ApiProperty({ description: 'Product ID' })
+  readonly productId: number;
 }

@@ -10,7 +10,7 @@ import { ApiOperation } from '@nestjs/swagger';
 
 import { TransactionsService } from '../services/transactions.service';
 import { Transaction } from '../entities';
-import { TokenizeCardDto } from '../dto/transaction.dto';
+import { CreateTransactionDto } from '../dto/transaction.dto';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -28,14 +28,19 @@ export class TransactionsController {
     return this.transactionService.findById(id);
   }
 
-  @Post('acceptance-token')
-  @ApiOperation({ summary: 'Get Acceptance Token' })
-  getAcceptanceToken(): Promise<string> {
-    return this.transactionService.getAcceptanceToken();
+  @Post()
+  @ApiOperation({ summary: 'Create a new transaction' })
+  async createTransaction(
+    @Body() transactionData: CreateTransactionDto,
+  ): Promise<Transaction> {
+    return this.transactionService.create(transactionData);
   }
-  @Post('tokenize-card')
-  @ApiOperation({ summary: 'Get Token to credit card' })
-  tokenizeCard(@Body() cardData: TokenizeCardDto): Promise<string> {
-    return this.transactionService.tokenizeCard(cardData);
+
+  @Post('verify/:id')
+  @ApiOperation({ summary: 'Verify transaction status' })
+  async verifyTransaction(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Transaction> {
+    return this.transactionService.verifyTransaction(id);
   }
 }

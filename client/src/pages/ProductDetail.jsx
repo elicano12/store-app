@@ -7,12 +7,11 @@ import { Dialog } from "@headlessui/react";
 import Checkout from "../pages/Checkout";
 import Payment from "../pages/Payment";
 import Confirmation from "../pages/Confirmation";
+import StatusTransactions from "../pages/StatusTransaction";
 import { fetchProductById } from "../redux/slices/productSlice";
 import { addItemToCart } from "../redux/slices/cartSlice";
-
 const ProductDetail = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const {
     selectedProduct: product,
@@ -21,7 +20,12 @@ const ProductDetail = () => {
   } = useSelector((state) => state.products);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [step, setStep] = useState(1); // 1 for Checkout, 2 for Payment, 3 for confirmation
+  const [step, setStep] = useState(1);
+  const [installments, setInstallments] = useState(1);
+  const [transactionStatus, setTransactionStatus] = useState(null);
+
+  const baseFee = 5000;
+  const deliveryFee = 2000;
 
   useEffect(() => {
     dispatch(fetchProductById(id));
@@ -30,20 +34,26 @@ const ProductDetail = () => {
   const handleBuyNow = () => {
     dispatch(addItemToCart(product));
     setIsModalOpen(true);
-    // navigate("/cart");
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setStep(1); // Reset to the first step
+    setTransactionStatus(null);
+    setStep(1);
+    localStorage.clear();
   };
 
   const proceedToConfirmation = () => {
     setStep(2);
   };
 
-  const proceedToPayment = () => {
+  const proceedToPayment = (data) => {
+    setInstallments(data.installments);
     setStep(3);
+  };
+  const handleTransactionFinal = (status) => {
+    setTransactionStatus(status);
+    setStep(4);
   };
 
   if (loading) return <div>Loading product...</div>;
@@ -67,6 +77,15 @@ const ProductDetail = () => {
           <p className="text-gray-700 mb-4">{product.description}</p>
           <p className="text-2xl font-bold text-green-600 mb-6">
             ${product.price}
+          </p>
+          <p
+            className={`text-xl font-medium ${
+              product.stock > 0 ? "text-green-600" : "text-red-600"
+            } mb-2`}
+          >
+            {product.stock > 0
+              ? `Stock: ${product.stock} units`
+              : "Out of stock"}
           </p>
           <button
             onClick={handleBuyNow}
@@ -92,7 +111,9 @@ const ProductDetail = () => {
                   ? "Checkout"
                   : step === 2
                   ? "Payment"
-                  : "Payment Confirmation"}
+                  : step === 3
+                  ? "Payment Confirmation"
+                  : "Transaction Status"}
               </Dialog.Title>
               {step === 1 && <Checkout onProceed={proceedToConfirmation} />}
               {step === 2 && <Payment onProceed={proceedToPayment} />}
@@ -100,11 +121,18 @@ const ProductDetail = () => {
                 <Confirmation
                   paymentSummary={{
                     productAmount: product.price,
-                    baseFee: 50, // Tarifa base
-                    deliveryFee: 20, // Tarifa de entrega
+                    baseFee,
+                    deliveryFee,
                   }}
                   productId={product.id}
-                  onConfirm={closeModal}
+                  onConfirm={handleTransactionFinal}
+                  installments={installments}
+                />
+              )}
+              {step === 4 && (
+                <StatusTransactions
+                  status={transactionStatus}
+                  onClose={closeModal}
                 />
               )}
               <button
