@@ -1,15 +1,17 @@
 import axios from 'axios';
-const apiUrl = import.meta.env.VITE_APP_API_URL
+const apiUrl = import.meta.env.VITE_APP_WOMPI_URL;
+const apiPublicKey = import.meta.env.VITE_APP_WOMPI_PUBLIC_KEY
 
-const axiosInstance = axios.create({
+const wompiInstance = axios.create({
   baseURL: apiUrl,
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
+    'Authorization': `Bearer ${apiPublicKey}`,
   },
 });
 
-axiosInstance.interceptors.response.use(
+wompiInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Error:', error.response || error.message);
@@ -17,4 +19,4 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export default axiosInstance;
+export default wompiInstance;

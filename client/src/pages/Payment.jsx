@@ -1,34 +1,55 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { clearCart } from '../redux/slices/cartSlice';
-import PaymentForm from '../components/PaymentForm';
+/* eslint-disable no-unused-vars */
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import PropTypes from "prop-types";
 
-const Payment = () => {
-  const { totalAmount } = useSelector((state) => state.cart);
-  const navigate = useNavigate();
+import { clearCart } from "../redux/slices/cartSlice";
+import PaymentForm from "../components/PaymentForm";
+import wompiInstance from "../api/wompiApi";
+
+const Payment = ({ onProceed }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  const fetchTokenizedCard = async (data) => {
+    setIsLoading(true);
+    const dataBody = {
+      number: data.cardNumber,
+      cvc: data.cvv,
+      exp_month: data.expirationDate.split("/")[0],
+      exp_year: data.expirationDate.split("/")[1],
+      card_holder: data.cardHolder,
+    };
+    try {
+      const response = await wompiInstance.post("/tokens/cards", dataBody);
+      if (response.data && response.data.data) {
+        localStorage.setItem("wompiTokenCard", response.data.data.id);
+      }
+      onProceed(data);
+    } catch (error) {
+      console.error("API Error:", error.response || error.message);
+      localStorage.setItem(
+        "wompiTokenCardError",
+        error.response || error.message
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const handlePayment = async () => {
-    // Aquí integras con la API de Wompi
-    // Suponiendo que el pago es exitoso
+  const handlePayment = async (formData) => {
+    fetchTokenizedCard(formData);
     dispatch(clearCart());
-    navigate('/confirmation');
   };
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Payment</h1>
-      <p className="mb-4">Total to pay: ${totalAmount.toFixed(2)}</p>
-      {/* <button
-        onClick={handlePayment}
-        className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
-      >
-        Pay Now
-      </button> */}
-      <PaymentForm onPayment={handlePayment} />
+      <PaymentForm onPayment={handlePayment} isLoading={isLoading} />
     </div>
   );
+};
+
+Payment.propTypes = {
+  onProceed: PropTypes.func.isRequired,
 };
 
 export default Payment;

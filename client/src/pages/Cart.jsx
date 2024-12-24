@@ -1,10 +1,12 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+/* eslint-disable no-unused-vars */
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 import {
   removeItemFromCart,
   updateItemQuantity,
-} from '../redux/slices/cartSlice';
-import { useNavigate } from 'react-router-dom';
+} from "../redux/slices/cartSlice";
 
 const Cart = () => {
   const { items, totalAmount } = useSelector((state) => state.cart);
@@ -16,7 +18,7 @@ const Cart = () => {
       <div className="container mx-auto p-6">
         <h1 className="text-2xl font-bold mb-4">Your Cart is Empty</h1>
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
           className="text-blue-500 underline"
         >
           Go Shopping
@@ -63,7 +65,7 @@ const Cart = () => {
       </div>
       <div className="flex justify-end mt-4">
         <button
-          onClick={() => navigate('/checkout')}
+          onClick={() => navigate("/checkout")}
           className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
         >
           Proceed to Checkout
